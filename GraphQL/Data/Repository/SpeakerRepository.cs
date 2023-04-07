@@ -37,5 +37,23 @@ namespace GraphQL.Data.Repository
 
             return new AddSpeakerPayload(speaker);
         }
+
+        public async Task<IReadOnlyDictionary<int, Speaker>> GetSpeakersByIdAsync(
+            IReadOnlyList<int> keys, 
+            CancellationToken cancellationToken = default)
+        {
+            return await _context.Speakers
+                .Where(s => keys.Contains(s.Id))
+                .ToDictionaryAsync(t => t.Id, cancellationToken);
+        }
+
+        public async Task<int[]> GetSpeakerSessionsByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Speakers
+                    .Where(s => s.Id == id)
+                    .Include(s => s.SessionSpeakers)
+                    .SelectMany(s => s.SessionSpeakers.Select(t => t.SessionId))
+                    .ToArrayAsync(cancellationToken: cancellationToken);
+        }
     }
 }

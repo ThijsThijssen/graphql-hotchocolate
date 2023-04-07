@@ -8,17 +8,18 @@ builder.Services
     .AddDbContextPool<ApplicationDbContext>(options => options.UseSqlite("Data Source=conferences.db"));
 
 builder.Services
-    .AddScoped<ISpeakerRepository, SpeakerRepository>();
+    .AddScoped<ISpeakerRepository, SpeakerRepository>()
+    .AddScoped<ISessionRepository, SessionRepository>();
 
 builder.Services
     .AddGraphQLServer()
     .AddTypes()
-    .RegisterService<ISpeakerRepository>(ServiceKind.Resolver);
+    .RegisterService<ISpeakerRepository>(ServiceKind.Resolver)
+    .RegisterService<ISessionRepository>(ServiceKind.Resolver);
 
 var app = builder.Build();
 
 app.UseRouting();
-
 
 app.UseEndpoints(endpoints =>
 {
