@@ -1,8 +1,9 @@
 ﻿using ConferencePlanner.GraphQL.Data;
 using ConferencePlanner.GraphQL.Speakers;
+using GraphQL.Repository;
 using Microsoft.EntityFrameworkCore;
 
-namespace GraphQL.Data.Repository
+namespace GraphQL.Repository
 {
     public class SpeakerRepository : ISpeakerRepository
     {
@@ -47,7 +48,7 @@ namespace GraphQL.Data.Repository
                 .ToDictionaryAsync(t => t.Id, cancellationToken);
         }
 
-        public async Task<int[]> GetSpeakerSessionsByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<int[]> GetSpeakerSessionsIdsAsync(int id, CancellationToken cancellationToken = default)
         {
             return await _context.Speakers
                     .Where(s => s.Id == id)

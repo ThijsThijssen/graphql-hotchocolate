@@ -4,16 +4,18 @@ using ConferencePlanner.GraphQL.Data;
 
 namespace ConferencePlanner.GraphQL.Speakers
 {
-    public class AddSpeakerPayload : SpeakerPayloadBase
+    public class SpeakerPayloadBase : Payload
     {
-        public AddSpeakerPayload(Speaker speaker)
-            : base(speaker)
+        protected SpeakerPayloadBase(Speaker speaker)
         {
+            Speaker = speaker;
         }
 
-        public AddSpeakerPayload(IReadOnlyList<UserError> errors)
+        protected SpeakerPayloadBase(IReadOnlyList<UserError> errors)
             : base(errors)
         {
         }
+
+        public Speaker? Speaker { get; }
     }
 }

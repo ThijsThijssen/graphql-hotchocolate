@@ -1,5 +1,5 @@
 using ConferencePlanner.GraphQL.Data;
-using GraphQL.Data.Repository;
+using GraphQL.Repository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,13 +9,18 @@ builder.Services
 
 builder.Services
     .AddScoped<ISpeakerRepository, SpeakerRepository>()
-    .AddScoped<ISessionRepository, SessionRepository>();
+    .AddScoped<ISessionRepository, SessionRepository>()
+    .AddScoped<IAttendeeRepository, AttendeeRepository>()
+    .AddScoped<ITrackRepository, TrackRepository>();
 
 builder.Services
     .AddGraphQLServer()
     .AddTypes()
+    .AddGlobalObjectIdentification()
     .RegisterService<ISpeakerRepository>(ServiceKind.Resolver)
-    .RegisterService<ISessionRepository>(ServiceKind.Resolver);
+    .RegisterService<ISessionRepository>(ServiceKind.Resolver)
+    .RegisterService<IAttendeeRepository>(ServiceKind.Resolver)
+    .RegisterService<ITrackRepository>(ServiceKind.Resolver);
 
 var app = builder.Build();
 

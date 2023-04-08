@@ -1,5 +1,5 @@
 ﻿using ConferencePlanner.GraphQL.Data;
-using GraphQL.Data.Repository;
+using GraphQL.Repository;
 
 namespace ConferencePlanner.GraphQL.DataLoader
 {
