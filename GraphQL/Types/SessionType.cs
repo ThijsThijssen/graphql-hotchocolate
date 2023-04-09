@@ -1,6 +1,7 @@
 ﻿using ConferencePlanner.GraphQL.Data;
-using ConferencePlanner.GraphQL.DataLoader;
-using GraphQL.DataLoader;
+using ConferencePlanner.GraphQL.Speakers;
+using ConferencePlanner.GraphQL.Tracks;
+using ConferencePlanner.GraphQL.Sessions;
 using GraphQL.Repository;
 
 namespace ConferencePlanner.GraphQL.Types
@@ -12,7 +13,7 @@ namespace ConferencePlanner.GraphQL.Types
             descriptor
                 .ImplementsNode()
                 .IdField(t => t.Id)
-                .ResolveNode((ctx, id) => ctx.DataLoader<SessionByIdDataLoader>().LoadAsync(id, ctx.RequestAborted));
+                .ResolveNode((ctx, id) => ctx.DataLoader<ISessionByIdDataLoader>().LoadAsync(id, ctx.RequestAborted));
 
             descriptor
                 .Field(t => t.SessionSpeakers)
@@ -38,7 +39,7 @@ namespace ConferencePlanner.GraphQL.Types
             public static async Task<IEnumerable<Speaker>> GetSpeakersAsync(
                 [Parent]Session session,
                 [Service(ServiceKind.Resolver)] ISessionRepository sessionRepository,
-                SpeakerByIdDataLoader speakerById,
+                ISpeakerByIdDataLoader speakerById,
                 CancellationToken cancellationToken)
             {
                 int[] speakerIds = await sessionRepository.GetSessionSpeakerIdsAsync(session.Id, cancellationToken);
@@ -49,7 +50,7 @@ namespace ConferencePlanner.GraphQL.Types
             public static async Task<IEnumerable<Attendee>> GetAttendeesAsync(
                 [Parent]Session session,
                 [Service(ServiceKind.Resolver)] ISessionRepository sessionRepository,
-                AttendeeByIdDataLoader attendeeById,
+                IAttendeeByIdDataLoader attendeeById,
                 CancellationToken cancellationToken)
             {
                 int[] attendeeIds = await sessionRepository.GetSessionAttendeeIdsAsync(session.Id, cancellationToken);
@@ -59,7 +60,7 @@ namespace ConferencePlanner.GraphQL.Types
 
             public static async Task<Track?> GetTrackAsync(
                 [Parent]Session session,
-                TrackByIdDataLoader trackById,
+                ITrackByIdDataLoader trackById,
                 CancellationToken cancellationToken)
             {
                 if (session.TrackId is null)

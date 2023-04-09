@@ -1,14 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using ConferencePlanner.GraphQL.Data;
-using ConferencePlanner.GraphQL.DataLoader;
-using HotChocolate;
-using HotChocolate.Types;
-using HotChocolate.Types.Relay;
-using GraphQL.DataLoader;
+﻿using ConferencePlanner.GraphQL.Data;
 using GraphQL.Repository;
 
 namespace ConferencePlanner.GraphQL.Tracks
@@ -35,14 +25,21 @@ namespace ConferencePlanner.GraphQL.Tracks
 
         public Task<Track> GetTrackByIdAsync(
             [ID(nameof(Track))] int id,
-            TrackByIdDataLoader trackById,
+            ITrackByIdDataLoader trackById,
             CancellationToken cancellationToken) =>
             trackById.LoadAsync(id, cancellationToken);
 
         public async Task<IEnumerable<Track>> GetTracksByIdAsync(
             [ID(nameof(Track))] int[] ids,
-            TrackByIdDataLoader trackById,
+            ITrackByIdDataLoader trackById,
             CancellationToken cancellationToken) =>
             await trackById.LoadAsync(ids, cancellationToken);
+
+        [DataLoader]
+        internal static async Task<IReadOnlyDictionary<int, Track>> GetTrackByIdAsync(
+            IReadOnlyList<int> keys,
+            ITrackRepository trackRepository,
+            CancellationToken cancellationToken)
+            => await trackRepository.GetTracksByIdAsync(keys, cancellationToken);
     }
 }

@@ -1,14 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using ConferencePlanner.GraphQL.Data;
-using ConferencePlanner.GraphQL.DataLoader;
-using HotChocolate;
-using HotChocolate.Resolvers;
-using HotChocolate.Types;
-using GraphQL.DataLoader;
+﻿using ConferencePlanner.GraphQL.Data;
+using ConferencePlanner.GraphQL.Sessions;
 using GraphQL.Repository;
 
 namespace ConferencePlanner.GraphQL.Types
@@ -20,7 +11,7 @@ namespace ConferencePlanner.GraphQL.Types
             descriptor
                 .ImplementsNode()
                 .IdField(t => t.Id)
-                .ResolveNode((ctx, id) => ctx.DataLoader<AttendeeByIdDataLoader>().LoadAsync(id, ctx.RequestAborted));
+                .ResolveNode((ctx, id) => ctx.DataLoader<IAttendeeByIdDataLoader>().LoadAsync(id, ctx.RequestAborted));
 
             descriptor
                 .Field(t => t.SessionsAttendees)
@@ -34,7 +25,7 @@ namespace ConferencePlanner.GraphQL.Types
             public static async Task<IEnumerable<Session>> GetSessionsAsync(
                 [Parent]Attendee attendee,
                 [Service(ServiceKind.Resolver)] IAttendeeRepository attendeeRepository,
-                SessionByIdDataLoader sessionById,
+                ISessionByIdDataLoader sessionById,
                 CancellationToken cancellationToken)
             {
                 int[] sessionIds = await attendeeRepository.GetAttendeeSessionsIdsAsync(attendee.Id, cancellationToken);

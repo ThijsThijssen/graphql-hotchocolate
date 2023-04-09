@@ -1,6 +1,6 @@
 ﻿using ConferencePlanner.GraphQL.Data;
-using GraphQL.DataLoader;
-using ConferencePlanner.GraphQL.DataLoader;
+using ConferencePlanner.GraphQL.Speakers;
+using ConferencePlanner.GraphQL.Sessions;
 using GraphQL.Repository;
 
 namespace ConferencePlanner.GraphQL.Types
@@ -12,7 +12,7 @@ namespace ConferencePlanner.GraphQL.Types
             descriptor
                 .ImplementsNode()
                 .IdField(t => t.Id)
-                .ResolveNode((ctx, id) => ctx.DataLoader<SpeakerByIdDataLoader>()
+                .ResolveNode((ctx, id) => ctx.DataLoader<ISpeakerByIdDataLoader>()
                 .LoadAsync(id, ctx.RequestAborted));
 
             descriptor
@@ -26,7 +26,7 @@ namespace ConferencePlanner.GraphQL.Types
             public static async Task<IEnumerable<Session>> GetSessionsAsync(
                 [Parent]Speaker speaker,
                 [Service(ServiceKind.Resolver)] ISpeakerRepository speakerRepository,
-                SessionByIdDataLoader sessionById,
+                ISessionByIdDataLoader sessionById,
                 CancellationToken cancellationToken)
             {
                 var sessionIds = await speakerRepository.GetSpeakerSessionsIdsAsync(speaker.Id, cancellationToken);

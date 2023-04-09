@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ConferencePlanner.GraphQL.Data;
-using GraphQL.DataLoader;
+﻿using ConferencePlanner.GraphQL.Data;
+using ConferencePlanner.GraphQL.Tracks;
+using ConferencePlanner.GraphQL.Sessions;
 using GraphQL.Repository;
 
 namespace ConferencePlanner.GraphQL.Types
@@ -13,20 +13,20 @@ namespace ConferencePlanner.GraphQL.Types
                 .ImplementsNode()
                 .IdField(t => t.Id)
                 .ResolveNode((ctx, id) =>
-                    ctx.DataLoader<TrackByIdDataLoader>().LoadAsync(id, ctx.RequestAborted));
+                    ctx.DataLoader<ITrackByIdDataLoader>().LoadAsync(id, ctx.RequestAborted));
 
             descriptor
                 .Field(t => t.Sessions)
-                .ResolveWith<TrackResolvers>(t => t.GetSessionsAsync(default!, default!, default!, default))
+                .ResolveWith<TrackResolvers>(t => TrackResolvers.GetSessionsAsync(default!, default!, default!, default))
                 .Name("sessions");
         }
 
         private class TrackResolvers
         {
-            public async Task<IEnumerable<Session>> GetSessionsAsync(
+            public static async Task<IEnumerable<Session>> GetSessionsAsync(
                 [Parent]Track track,
                 [Service(ServiceKind.Resolver)] ITrackRepository trackRepository,
-                SessionByIdDataLoader sessionById,
+                ISessionByIdDataLoader sessionById,
                 CancellationToken cancellationToken)
             {
                 int[] sessionIds = await trackRepository.GetTrackSessionIdsAsync(track.Id, cancellationToken);

@@ -1,13 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using ConferencePlanner.GraphQL.Common;
+﻿using ConferencePlanner.GraphQL.Common;
 using ConferencePlanner.GraphQL.Data;
-using ConferencePlanner.GraphQL.DataLoader;
-using HotChocolate;
-using GraphQL.DataLoader;
+using ConferencePlanner.GraphQL.Speakers;
+using ConferencePlanner.GraphQL.Tracks;
 using GraphQL.Repository;
 
 namespace ConferencePlanner.GraphQL.Sessions
@@ -25,7 +19,7 @@ namespace ConferencePlanner.GraphQL.Sessions
         }
 
         public async Task<Track?> GetTrackAsync(
-            TrackByIdDataLoader trackById,
+            ITrackByIdDataLoader trackById,
             CancellationToken cancellationToken)
         {
             if (Session is null)
@@ -38,7 +32,7 @@ namespace ConferencePlanner.GraphQL.Sessions
 
         public async Task<IEnumerable<Speaker>?> GetSpeakersAsync(
             [Service(ServiceKind.Resolver)] ISessionRepository sessionRepository,
-            SpeakerByIdDataLoader speakerById,
+            ISpeakerByIdDataLoader speakerById,
             CancellationToken cancellationToken)
         {
             if (Session is null)

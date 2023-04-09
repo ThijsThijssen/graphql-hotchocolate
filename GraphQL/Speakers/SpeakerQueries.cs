@@ -1,5 +1,4 @@
 ﻿using ConferencePlanner.GraphQL.Data;
-using ConferencePlanner.GraphQL.DataLoader;
 using GraphQL.Repository;
 
 namespace ConferencePlanner.GraphQL.Speakers
@@ -14,14 +13,21 @@ namespace ConferencePlanner.GraphQL.Speakers
 
         public Task<Speaker> GetSpeakerByIdAsync(
             [ID(nameof(Speaker))] int id,
-            SpeakerByIdDataLoader dataLoader,
+            ISpeakerByIdDataLoader dataLoader,
             CancellationToken cancellationToken) =>
             dataLoader.LoadAsync(id, cancellationToken);
 
         public async Task<IEnumerable<Speaker>> GetSpeakersByIdAsync(
             [ID(nameof(Speaker))] int[] ids,
-            SpeakerByIdDataLoader dataLoader,
+            ISpeakerByIdDataLoader dataLoader,
             CancellationToken cancellationToken) =>
             await dataLoader.LoadAsync(ids, cancellationToken);
+
+        [DataLoader]
+        internal static async Task<IReadOnlyDictionary<int, Speaker>> GetSpeakerByIdAsync(
+            IReadOnlyList<int> keys,
+            ISpeakerRepository speakerRepository,
+            CancellationToken cancellationToken) 
+            => await speakerRepository.GetSpeakersByIdAsync(keys, cancellationToken);
     }
 }

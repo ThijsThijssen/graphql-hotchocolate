@@ -1,13 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using ConferencePlanner.GraphQL.Data;
-using HotChocolate;
-using HotChocolate.Types;
-using HotChocolate.Types.Relay;
-using ConferencePlanner.GraphQL.DataLoader;
-using GraphQL.DataLoader;
+﻿using ConferencePlanner.GraphQL.Data;
 using GraphQL.Repository;
 
 namespace ConferencePlanner.GraphQL.Sessions
@@ -22,14 +13,28 @@ namespace ConferencePlanner.GraphQL.Sessions
 
         public Task<Session> GetSessionByIdAsync(
             [ID(nameof(Session))] int id,
-            SessionByIdDataLoader sessionById,
+            ISessionByIdDataLoader sessionById,
             CancellationToken cancellationToken) =>
             sessionById.LoadAsync(id, cancellationToken);
 
         public async Task<IEnumerable<Session>> GetSessionsByIdAsync(
             [ID(nameof(Session))] int[] ids,
-            SessionByIdDataLoader sessionById,
+            ISessionByIdDataLoader sessionById,
             CancellationToken cancellationToken) =>
             await sessionById.LoadAsync(ids, cancellationToken);
+
+        [DataLoader]
+        internal static async Task<IReadOnlyDictionary<int, Session>> GetSessionByIdAsync(
+           IReadOnlyList<int> keys,
+           ISessionRepository sessionRepository,
+           CancellationToken cancellationToken)
+           => await sessionRepository.GetSessionsByIdAsync(keys, cancellationToken);
+
+        [DataLoader]
+        internal static async Task<IReadOnlyDictionary<int, Attendee>> GetAttendeeByIdAsync(
+            IReadOnlyList<int> keys,
+            IAttendeeRepository attendeeRepository,
+            CancellationToken cancellationToken)
+            => await attendeeRepository.GetAttendeesByIdAsync(keys, cancellationToken);
     }
 }
